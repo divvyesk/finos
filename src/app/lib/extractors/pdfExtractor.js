@@ -40,7 +40,7 @@ export async function extractTextFromPDF(buffer) {
   } catch (firstErr) {
     // Second pass: try with no options at all (bare call)
     // Some PDFs fail with options but work with defaults
-    console.warn('[pdfExtractor] First parse attempt failed, retrying with defaults:', firstErr.message);
+    console.warn(`[pdfExtractor] First parse attempt failed, retrying with defaults: ${firstErr.message}`);
     try {
       const result = await pdf(buffer);
       const text = result.text?.trim() || '';

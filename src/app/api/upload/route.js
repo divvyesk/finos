@@ -118,7 +118,7 @@ export async function POST(request) {
     }
 
     // Stage 3 — validate
-    const validation = validateExtractedData(structuredData);
+    const validation = await validateExtractedData(structuredData);
 
     const payload = {
       success: true,

@@ -16,23 +16,49 @@
  * - WARNINGS are displayed as advisory notices. The user can override.
  */
 
-export function validateExtractedData(data) {
+export async function validateExtractedData(data) {
   const errors = [];
   const warnings = [];
+
+  // Convert salary to USD if currency is not USD
+  let salaryInUSD = data.salary;
+  if (data.salary !== null && data.salary !== undefined) {
+    const currency = (data.currency || 'USD').toUpperCase();
+    if (currency !== 'USD') {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (!res.ok) throw new Error('API response not ok');
+        const json = await res.json();
+        const rate = json.rates[currency];
+        if (rate) {
+          salaryInUSD = data.salary / rate;
+        } else {
+          const fallbacks = { INR: 84, CAD: 1.36, GBP: 0.78, EUR: 0.92, AUD: 1.5, SGD: 1.34, JPY: 155 };
+          const fallbackRate = fallbacks[currency] || 1;
+          salaryInUSD = data.salary / fallbackRate;
+        }
+      } catch (err) {
+        console.warn('[validator] Failed to fetch live exchange rate, using static fallback:', err.message);
+        const fallbacks = { INR: 84, CAD: 1.36, GBP: 0.78, EUR: 0.92, AUD: 1.5, SGD: 1.34, JPY: 155 };
+        const fallbackRate = fallbacks[currency] || 1;
+        salaryInUSD = data.salary / fallbackRate;
+      }
+    }
+  }
 
   // ── BLOCKING ERRORS ──────────────────────────────────────────
 
   // Salary is the most critical field — nothing works without it
   if (data.salary === null || data.salary === undefined) {
     errors.push('Could not detect base salary. Please enter it manually.');
-  } else if (data.salary < 10000) {
+  } else if (salaryInUSD < 5000) {
     errors.push(
-      `Salary of ${data.currency || '$'}${data.salary.toLocaleString()} looks too low for an annual figure. ` +
+      `Salary of ${data.currency || '$'}${data.salary.toLocaleString()} (approx. $${Math.round(salaryInUSD).toLocaleString()} USD) looks too low for an annual figure. ` +
       `Did the document show a weekly or hourly rate instead?`
     );
-  } else if (data.salary > 1500000) {
+  } else if (salaryInUSD > 1000000) {
     errors.push(
-      `Salary of ${data.currency || '$'}${data.salary.toLocaleString()} is unusually high. ` +
+      `Salary of ${data.currency || '$'}${data.salary.toLocaleString()} (approx. $${Math.round(salaryInUSD).toLocaleString()} USD) is unusually high. ` +
       `Please verify the currency and figure.`
     );
   }
