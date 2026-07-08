@@ -1,19 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getDatabase } from '../../../lib/mongodb';
-import { GoogleGenAI } from '@google/genai';
+import { callOpenRouter } from '../../../lib/openRouterClient.js';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
-let ai = null;
-function getAiClient() {
-  if (!ai) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-}
 
 export async function POST(request) {
   try {
@@ -43,7 +35,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid level number' }, { status: 400 });
     }
 
-    const aiClient = getAiClient();
+
     const prompt = `You are a helpful, direct financial advisor assistant inside the FinOS application.
 The user is viewing the roadmap step: "Level ${level.levelNumber}: ${level.title}".
 Context of this level:
@@ -68,7 +60,7 @@ Answer the user's question directly, clearly, and concisely (1-3 short paragraph
 
 Do not include any greeting or signature, just write the helpful response in clear markdown format.`;
 
-    const response = await aiClient.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: prompt
     });

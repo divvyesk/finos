@@ -1,16 +1,8 @@
-import { GoogleGenAI } from '@google/genai';
+import { callOpenRouter } from './openRouterClient.js';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
-let ai = null;
-function getAiClient() {
-  if (!ai) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-}
 
 // ── US Rule Engine (2024 brackets) ──────────────────────────────────────────
 export function calculateUSTaxes(salary, stateInput = 'California', preTaxContribution = 0) {
@@ -248,7 +240,7 @@ export function calculateCanadaTaxes(salary, provinceInput = 'Ontario', preTaxCo
 
 // ── Grounded AI Tax Engine (Fallback for other countries) ───────────────────
 export async function calculateInternationalTaxesGemini(salary, country, state = '', currency = 'USD', preTaxContribution = 0) {
-  const aiClient = getAiClient();
+
   const prompt = `You are a professional multi-country tax calculator.
 Analyze the following personal profile:
 Gross Annual Salary: ${salary}
@@ -280,7 +272,7 @@ Return a JSON object conforming exactly to this structure:
 
   let responseText = '';
   try {
-    const response = await aiClient.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -291,7 +283,7 @@ Return a JSON object conforming exactly to this structure:
   } catch (error) {
     console.warn('[taxEngine] Primary gemini-2.5-flash model failed or unavailable. Retrying with gemini-1.5-flash...', error.message);
     try {
-      const response = await aiClient.models.generateContent({
+      const response = await callOpenRouter({
         model: 'gemini-1.5-flash',
         contents: prompt,
         config: {

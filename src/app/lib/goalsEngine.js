@@ -1,23 +1,15 @@
-import { GoogleGenAI } from '@google/genai';
+import { callOpenRouter } from './openRouterClient.js';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
-let ai = null;
-function getAiClient() {
-  if (!ai) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-}
 
 /**
  * Parses user input to extract goal details.
  * If details are insufficient, flags needsClarification: true and returns followUpQuestions.
  */
 export async function parseGoalInput(message, history = []) {
-  const aiClient = getAiClient();
+
   
   const historyText = history
     .map(h => `${h.role === 'user' ? 'User' : 'Assistant'}: ${h.text}`)
@@ -63,7 +55,7 @@ Return a JSON object conforming exactly to this structure:
 Do not return any markdown formatting or explanations, just the raw JSON object.`;
 
   try {
-    const response = await aiClient.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -212,7 +204,7 @@ export async function buildRoadmap({
   });
 
   // Invoke Gemini to generate personalized explanations for each level
-  const aiClient = getAiClient();
+
   const levelsContext = levels.map(l => {
     return `Level ${l.levelNumber}: ${l.title} (${l.action}) -> Stored in: ${l.allocation}`;
   }).join('\n');
@@ -251,7 +243,7 @@ Return a JSON array of 4 objects corresponding to the levels in order. Confirmin
 Do not return any formatting, markdown markers, or explanations, just the JSON array.`;
 
   try {
-    const response = await aiClient.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {

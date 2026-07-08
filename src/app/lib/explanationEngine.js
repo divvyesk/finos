@@ -1,16 +1,8 @@
-import { GoogleGenAI } from '@google/genai';
+import { callOpenRouter } from './openRouterClient.js';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
-let ai = null;
-function getAiClient() {
-  if (!ai) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-}
 
 export async function generateTaxExplanation({
   grossSalary,
@@ -21,7 +13,7 @@ export async function generateTaxExplanation({
   effectiveTaxRate,
   taxBrackets
 }) {
-  const aiClient = getAiClient();
+
 
   const deductionLines = Object.entries(deductions)
     .map(([key, val]) => `- ${key}: ${val} ${currency}`)
@@ -66,7 +58,7 @@ Return a JSON object conforming exactly to this structure:
 Do not include any formatting, markdown formatting, or explainers, just the JSON payload. Ensure response matches this schema exactly.`;
 
   try {
-    const response = await aiClient.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {

@@ -1,21 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
+import { callOpenRouter } from '../openRouterClient.js';
 import dotenv from 'dotenv';
 
 // Load environment variables (fallback in case next server has not loaded them yet)
 dotenv.config({ path: '.env.local' });
 
-// Initialize lazily inside the handler to ensure process.env is fully populated
-let ai = null;
-function getAiClient() {
-  if (!ai) {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error('[fieldExtractor] GEMINI_API_KEY is missing from process.env');
-    }
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-}
 
 // ── JSON Schema for structured output ───────────────────────────────────────
 // This is passed directly to Gemini as responseSchema.
@@ -195,8 +183,7 @@ export async function extractAllFields(rawText) {
   }
 
   try {
-    const client = getAiClient();
-    const response = await client.models.generateContent({
+    const response = await callOpenRouter({
       model: 'gemini-2.5-flash',
       contents: [
         {
