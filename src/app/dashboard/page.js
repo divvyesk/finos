@@ -73,6 +73,30 @@ export default function Dashboard() {
       .finally(() => setCountriesLoading(false));
   }, [router]);
 
+  // Restore user progress on mount
+  useEffect(() => {
+    fetch('/api/goals')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => {
+        if (d.hasProfile) {
+          setPipelineStage('done');
+          setResult({
+            data: d.profile,
+            validation: { isValid: true, errors: [], warnings: [] },
+            source: 'Saved Profile'
+          });
+          setStep2Done(true);
+          setActiveStep(1); // Default next step
+        }
+        if (d.activeGoal) {
+          setStep3Done(true);
+          setActiveStep(2); // Take them to goals workspace directly
+        }
+      })
+      .catch(err => console.error('Failed to restore progress', err));
+  }, []);
+
+
   // Handle dynamic states and currency when country changes
   useEffect(() => {
     if (!form.country) {
