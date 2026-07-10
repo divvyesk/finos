@@ -1,4 +1,23 @@
-export default function Home() {
+import { cookies } from 'next/headers';
+import { getData } from './lib/db';
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('session')?.value;
+  
+  let user = null;
+  if (sessionId) {
+    try {
+      const data = getData();
+      const found = data.users.find(u => u.id === sessionId);
+      if (found) {
+        user = { id: found.id, name: found.name, email: found.email };
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
     <div className="container">
       {/* Hero Section */}
@@ -29,9 +48,15 @@ export default function Home() {
         </p>
         
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <a href="/signup" className="btn btn-primary" style={{ padding: '0.9rem 2rem', fontSize: '1rem' }}>
-            Start My Financial Journey
-          </a>
+          {user ? (
+            <a href="/dashboard" className="btn btn-primary" style={{ padding: '0.9rem 2rem', fontSize: '1rem' }}>
+              Go to Dashboard
+            </a>
+          ) : (
+            <a href="/signup" className="btn btn-primary" style={{ padding: '0.9rem 2rem', fontSize: '1rem' }}>
+              Start My Financial Journey
+            </a>
+          )}
           <a href="#how-it-works" className="btn btn-secondary" style={{ padding: '0.9rem 2rem', fontSize: '1rem' }}>
             Learn More
           </a>

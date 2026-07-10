@@ -19,11 +19,8 @@ const PIPELINE_STAGES = [
 
 const STAGE_INDEX = { uploading: 0, ocr: 1, extracting: 2, validating: 3 };
 
-// ── Journey steps sidebar ─────────────────────────────────────────────────
 const JOURNEY_STEPS = [
   'Understand Income', 'Understand Taxes', 'Define Goals',
-  'Build Safety Net', 'Build Spending System', 'Explore Scenarios',
-  'Build Financial Roadmap', 'Complete Setup',
 ];
 
 export default function Dashboard() {
@@ -324,6 +321,25 @@ export default function Dashboard() {
                             onChange={e => setForm({ ...form, state: e.target.value })}
                           />
                         )}
+                      </Field>
+                      <Field label="Start Date" id="start_date">
+                        <input
+                          id="start_date"
+                          type="date"
+                          className="form-input"
+                          value={form.start_date}
+                          onChange={e => setForm({ ...form, start_date: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="Work Location (City/Office)" id="location">
+                        <input
+                          id="location"
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. San Francisco"
+                          value={form.location}
+                          onChange={e => setForm({ ...form, location: e.target.value })}
+                        />
                       </Field>
                     </div>
 

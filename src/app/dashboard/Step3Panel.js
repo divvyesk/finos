@@ -28,6 +28,7 @@ const COMMON_DEBT_CATEGORIES = [
 
 export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
   const [loading, setLoading] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState(null); // null | 'target' | 'surplus' | 'timeline' | 'feasibility'
   const [error, setError] = useState('');
 
   // Paycheck info
@@ -332,6 +333,127 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
       setError(err.message || 'Error occurred saving your goal.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Checklist progress helper
+  const getLevelProgress = (level) => {
+    if (!level.checklist) {
+      const fallbackPct = level.targetAmount > 0 ? (level.currentAmount / level.targetAmount) * 100 : 100;
+      return {
+        pct: fallbackPct,
+        isCompleted: fallbackPct === 100
+      };
+    }
+
+    const setupItems = level.checklist.setup || [];
+    const monthlyChecked = level.checklist.monthlyChecked;
+
+    let monthlyDoneFraction = monthlyChecked ? 1 : 0;
+    if (level.checklist.monthlyCustomAmount !== '' && level.checklist.monthlyCustomAmount !== undefined && level.checklist.monthlyCustomAmount !== null) {
+      const customVal = Number(level.checklist.monthlyCustomAmount);
+      if (customVal > 0) {
+        const monthlyTarget = useAlternative
+          ? roadmap?.alternativePlan?.monthlyRequired || roadmap?.monthlyRequired || 1
+          : roadmap?.monthlyRequired || 1;
+        monthlyDoneFraction = Math.min(1, customVal / monthlyTarget);
+      }
+    }
+
+    const totalItems = setupItems.length + 1; // setup steps + monthly check
+    const completedItems = setupItems.filter(s => s.completed).length + monthlyDoneFraction;
+    const pct = totalItems > 0 ? (completedItems / totalItems) * 100 : 100;
+    
+    return {
+      pct: pct,
+      isCompleted: pct === 100
+    };
+  };
+
+  const toggleChecklistItem = async (levelNumber, itemId) => {
+    if (!roadmap) return;
+    const updatedLevels = roadmap.levels.map(level => {
+      if (level.levelNumber !== levelNumber) return level;
+      
+      const setup = (level.checklist?.setup || []).map(item => {
+        if (item.id === itemId) {
+          return { ...item, completed: !item.completed };
+        }
+        return item;
+      });
+
+      const updatedLevel = {
+        ...level,
+        checklist: {
+          ...(level.checklist || {}),
+          setup
+        }
+      };
+
+      const { isCompleted } = getLevelProgress(updatedLevel);
+      updatedLevel.isCompleted = isCompleted;
+
+      return updatedLevel;
+    });
+
+    const updatedRoadmap = {
+      ...roadmap,
+      levels: updatedLevels
+    };
+
+    setRoadmap(updatedRoadmap);
+    saveChecklistProgress(updatedRoadmap);
+  };
+
+  const updateMonthlyCheck = async (levelNumber, isChecked, customAmount) => {
+    if (!roadmap) return;
+    const updatedLevels = roadmap.levels.map(level => {
+      if (level.levelNumber !== levelNumber) return level;
+
+      const updatedLevel = {
+        ...level,
+        checklist: {
+          ...(level.checklist || {}),
+          monthlyChecked: isChecked !== null ? isChecked : level.checklist?.monthlyChecked,
+          monthlyCustomAmount: customAmount !== null ? customAmount : (level.checklist?.monthlyCustomAmount || '')
+        }
+      };
+
+      const { isCompleted } = getLevelProgress(updatedLevel);
+      updatedLevel.isCompleted = isCompleted;
+
+      return updatedLevel;
+    });
+
+    const updatedRoadmap = {
+      ...roadmap,
+      levels: updatedLevels
+    };
+
+    setRoadmap(updatedRoadmap);
+    saveChecklistProgress(updatedRoadmap);
+  };
+
+  const saveChecklistProgress = async (updatedRoadmap) => {
+    try {
+      await fetch('/api/goals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          confirmGoal: true,
+          savings,
+          savingsList,
+          debt,
+          monthlyExpenses,
+          goalData: {
+            title: extractedParams.title || 'My Personal Goal',
+            extractedParameters: extractedParams,
+            roadmap: updatedRoadmap
+          }
+        })
+      });
+    } catch (err) {
+      console.error('Failed to auto-save checklist progress:', err);
     }
   };
 
@@ -790,6 +912,9 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                 renderFormattedText={renderFormattedText}
                 roadmap={roadmap}
                 useAlternative={useAlternative}
+                getLevelProgress={getLevelProgress}
+                toggleChecklistItem={toggleChecklistItem}
+                updateMonthlyCheck={updateMonthlyCheck}
               />
             ) : (
               <section className="card">
@@ -834,42 +959,205 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
 
                 {/* Stress / metrics summary cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8 }}>
-                    <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Monthly Target</span>
+                  {/* Monthly Target Card */}
+                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Monthly Target</span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTooltip(activeTooltip === 'target' ? null : 'target')}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: activeTooltip === 'target' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)',
+                          color: activeTooltip === 'target' ? '#fff' : 'var(--text-secondary)',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          border: '1px solid var(--border-light)',
+                          outline: 'none',
+                          padding: 0,
+                          lineHeight: 1
+                        }}
+                      >
+                        i
+                      </button>
+                    </div>
                     <strong style={{ fontSize: '1.4rem', color: 'var(--primary)' }}>
                       {s}{(useAlternative ? roadmap.alternativePlan?.monthlyRequired || roadmap.monthlyRequired : roadmap.monthlyRequired).toLocaleString()}
                     </strong>
+                    {activeTooltip === 'target' && (
+                      <div style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--text-secondary)',
+                        marginTop: '0.75rem',
+                        borderTop: '1px solid var(--border-light)',
+                        paddingTop: '0.5rem',
+                        lineHeight: '1.4'
+                      }}>
+                        The amount you need to save each month to hit your primary goal within the selected timeline.
+                      </div>
+                    )}
                   </div>
+
+                  {/* Your Monthly Surplus Card */}
                   {netTakeHomeMonthly > 0 && (
-                    <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8 }}>
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Your Monthly Surplus</span>
+                    <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8, display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Your Monthly Surplus</span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTooltip(activeTooltip === 'surplus' ? null : 'surplus')}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            background: activeTooltip === 'surplus' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)',
+                            color: activeTooltip === 'surplus' ? '#fff' : 'var(--text-secondary)',
+                            fontSize: '10px',
+                            fontWeight: '700',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            border: '1px solid var(--border-light)',
+                            outline: 'none',
+                            padding: 0,
+                            lineHeight: 1
+                          }}
+                        >
+                          i
+                        </button>
+                      </div>
                       <strong style={{ fontSize: '1.4rem', color: 'var(--success)' }}>
                         {s}{(netTakeHomeMonthly - expensesSum).toLocaleString()}
                       </strong>
+                      {activeTooltip === 'surplus' && (
+                        <div style={{
+                          fontSize: '0.8rem',
+                          color: 'var(--text-secondary)',
+                          marginTop: '0.75rem',
+                          borderTop: '1px solid var(--border-light)',
+                          paddingTop: '0.5rem',
+                          lineHeight: '1.4'
+                        }}>
+                          Your net monthly take-home pay minus your core expenses (the money available to save or invest).
+                        </div>
+                      )}
                     </div>
                   )}
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8 }}>
-                    <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Timeline</span>
+
+                  {/* Timeline Card */}
+                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Timeline</span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTooltip(activeTooltip === 'timeline' ? null : 'timeline')}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: activeTooltip === 'timeline' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)',
+                          color: activeTooltip === 'timeline' ? '#fff' : 'var(--text-secondary)',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          border: '1px solid var(--border-light)',
+                          outline: 'none',
+                          padding: 0,
+                          lineHeight: 1
+                        }}
+                      >
+                        i
+                      </button>
+                    </div>
                     <strong style={{ fontSize: '1.4rem' }}>
                       {useAlternative ? roadmap.alternativePlan?.timelineYears || roadmap.timelineYears : roadmap.timelineYears} Years
                     </strong>
+                    {activeTooltip === 'timeline' && (
+                      <div style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--text-secondary)',
+                        marginTop: '0.75rem',
+                        borderTop: '1px solid var(--border-light)',
+                        paddingTop: '0.5rem',
+                        lineHeight: '1.4'
+                      }}>
+                        The duration allocated to achieve your primary goal. Can be extended to reduce monthly savings stress.
+                      </div>
+                    )}
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8 }}>
-                    <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Feasibility</span>
-                    <strong style={{ fontSize: '1.4rem', color: useAlternative || roadmap.stressLevel === 'low' ? 'var(--success)' : 'var(--accent)' }}>
-                      {useAlternative ? 'Stress-Free' : roadmap.stressLevel.toUpperCase()}
+
+                  {/* Feasibility Card */}
+                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Feasibility</span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTooltip(activeTooltip === 'feasibility' ? null : 'feasibility')}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: activeTooltip === 'feasibility' ? 'var(--primary)' : 'rgba(255, 255, 255, 0.08)',
+                          color: activeTooltip === 'feasibility' ? '#fff' : 'var(--text-secondary)',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          border: '1px solid var(--border-light)',
+                          outline: 'none',
+                          padding: 0,
+                          lineHeight: 1
+                        }}
+                      >
+                        i
+                      </button>
+                    </div>
+                    <strong style={{
+                      fontSize: '1.4rem',
+                      color: (useAlternative || roadmap.stressLevel === 'low')
+                        ? 'var(--success)'
+                        : roadmap.stressLevel === 'medium'
+                          ? 'var(--accent)'
+                          : 'var(--error)'
+                    }}>
+                      {useAlternative ? 'HIGH (Stress-Free)' : {
+                        low: 'HIGH',
+                        medium: 'MODERATE',
+                        high: 'LOW',
+                        impossible: 'UNFEASIBLE'
+                      }[roadmap.stressLevel] || 'UNKNOWN'}
                     </strong>
+                    {activeTooltip === 'feasibility' && (
+                      <div style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--text-secondary)',
+                        marginTop: '0.75rem',
+                        borderTop: '1px solid var(--border-light)',
+                        paddingTop: '0.5rem',
+                        lineHeight: '1.4'
+                      }}>
+                        How realistic your goal is based on the savings ratio (Monthly Target / Monthly Surplus). HIGH: ≤ 20%, MODERATE: ≤ 40%, LOW: ≤ 60%, UNFEASIBLE: &gt; 60%.
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Simplified levels list */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
                   {(roadmap.levels || []).map((level) => {
-                    const pct = level.targetAmount > 0 ? (level.currentAmount / level.targetAmount) * 100 : 100;
-                    const activeYears = useAlternative ? roadmap.alternativePlan?.timelineYears || roadmap.timelineYears : roadmap.timelineYears;
-                    const monthlyDepositAmt = level.type === 'investing'
-                      ? level.targetAmount
-                      : Math.round(level.targetAmount / (activeYears * 12));
+                    const { pct, isCompleted } = getLevelProgress(level);
 
                     return (
                       <div
@@ -889,13 +1177,13 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                             <span style={{
                               width: 28, height: 28, borderRadius: '50%',
-                              background: level.isCompleted ? 'var(--success-glow)' : 'var(--primary-glow)',
-                              color: level.isCompleted ? 'var(--success)' : 'var(--primary)',
+                              background: isCompleted ? 'var(--success-glow)' : 'var(--primary-glow)',
+                              color: isCompleted ? 'var(--success)' : 'var(--primary)',
                               display: 'flex', justifyContent: 'center', alignItems: 'center',
                               fontSize: '0.85rem', fontWeight: 700,
-                              border: `1px solid ${level.isCompleted ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}`
+                              border: `1px solid ${isCompleted ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}`
                             }}>
-                              {level.isCompleted ? '✓' : level.levelNumber}
+                              {isCompleted ? '✓' : level.levelNumber}
                             </span>
                             <div>
                               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -903,7 +1191,7 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                               </span>
                               <h3 style={{ fontSize: '1.05rem', margin: '0.15rem 0 0' }}>{level.title}</h3>
                               <span style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.25rem', fontWeight: 500 }}>
-                                {level.targetAmount === 0 ? 'No deposit required' : `Required: ${s}${monthlyDepositAmt.toLocaleString()}/month`}
+                                {level.targetAmount === 0 ? 'No target amount' : `Target Amount: ${s}${level.targetAmount.toLocaleString()}`}
                               </span>
                             </div>
                           </div>
@@ -911,7 +1199,7 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             <span style={{
                               fontSize: '0.9rem', fontWeight: 700,
-                              color: level.isCompleted ? 'var(--success)' : 'var(--text-primary)'
+                              color: isCompleted ? 'var(--success)' : 'var(--text-primary)'
                             }}>
                               {pct.toFixed(0)}% Completed
                             </span>
@@ -931,7 +1219,7 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                         {/* Progress Bar */}
                         {level.targetAmount > 0 && (
                           <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
-                            <div style={{ width: `${pct}%`, height: '100%', background: level.isCompleted ? 'var(--success)' : 'var(--primary)', transition: 'width 0.3s' }} />
+                            <div style={{ width: `${pct}%`, height: '100%', background: isCompleted ? 'var(--success)' : 'var(--primary)', transition: 'width 0.3s' }} />
                           </div>
                         )}
                       </div>
@@ -961,9 +1249,9 @@ export default function Step3Panel({ onBack, onProceed, setStep3Done }) {
                       Confirm and Save Roadmap →
                     </button>
                   ) : (
-                    <button className="btn btn-primary" onClick={onProceed}>
-                      Proceed to Step 4: Build Safety Net →
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--success)', fontWeight: 600, fontSize: '0.95rem' }}>
+                      ✓ Roadmap Confirmed & Active
+                    </div>
                   )}
                 </div>
               </section>
@@ -990,13 +1278,12 @@ function LevelWorkspace({
   subChatLoading,
   renderFormattedText,
   roadmap,
-  useAlternative
+  useAlternative,
+  getLevelProgress,
+  toggleChecklistItem,
+  updateMonthlyCheck
 }) {
-  const pct = level.targetAmount > 0 ? (level.currentAmount / level.targetAmount) * 100 : 100;
-  const activeYears = useAlternative ? roadmap?.alternativePlan?.timelineYears || roadmap?.timelineYears : roadmap?.timelineYears;
-  const monthlyDepositAmt = level.type === 'investing'
-    ? level.targetAmount
-    : Math.round(level.targetAmount / (activeYears * 12));
+  const { pct, isCompleted } = getLevelProgress(level);
 
   return (
     <section className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: '600px', background: 'rgba(10, 15, 30, 0.6)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -1014,12 +1301,12 @@ function LevelWorkspace({
           </div>
         </div>
         <span style={{
-          background: level.isCompleted ? 'var(--success-glow)' : 'var(--primary-glow)',
-          color: level.isCompleted ? 'var(--success)' : 'var(--primary)',
+          background: isCompleted ? 'var(--success-glow)' : 'var(--primary-glow)',
+          color: isCompleted ? 'var(--success)' : 'var(--primary)',
           fontSize: '0.8rem', fontWeight: 700, padding: '0.35rem 0.75rem',
-          borderRadius: 20, border: `1px solid ${level.isCompleted ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}`
+          borderRadius: 20, border: `1px solid ${isCompleted ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}`
         }}>
-          {level.isCompleted ? '✓ Objective Met' : 'Active Stage'}
+          {isCompleted ? '✓ Objective Met' : 'Active Stage'}
         </span>
       </div>
 
@@ -1039,17 +1326,82 @@ function LevelWorkspace({
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.25rem', color: 'var(--text-muted)' }}>
                   <span>Completed</span>
-                  <span>{s}{level.currentAmount.toLocaleString()} / {s}{level.targetAmount.toLocaleString()} ({pct.toFixed(0)}%)</span>
+                  <span>{pct.toFixed(0)}%</span>
                 </div>
                 <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ width: `${pct}%`, height: '100%', background: level.isCompleted ? 'var(--success)' : 'var(--primary)', transition: 'width 0.3s' }} />
+                  <div style={{ width: `${pct}%`, height: '100%', background: isCompleted ? 'var(--success)' : 'var(--primary)', transition: 'width 0.3s' }} />
                 </div>
                 <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-light)', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                  <strong>Monthly Contribution:</strong> {s}{monthlyDepositAmt.toLocaleString()}/month
+                  <strong>Total Target Amount:</strong> {s}{level.targetAmount.toLocaleString()}
                 </div>
               </div>
             )}
           </div>
+
+          {/* Interactive Checklist Section */}
+          {level.checklist && (
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: 8, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                Level Action Checklist
+              </span>
+              
+              {/* Setup steps */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.50rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>1. Setup Quests:</span>
+                {(level.checklist.setup || []).map((quest) => (
+                  <label key={quest.id} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.82rem', alignItems: 'flex-start', cursor: 'pointer', color: quest.completed ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                    <input
+                      type="checkbox"
+                      checked={quest.completed || false}
+                      onChange={() => toggleChecklistItem(level.levelNumber, quest.id)}
+                      style={{ marginTop: '0.15rem' }}
+                    />
+                    <span style={{ textDecoration: quest.completed ? 'line-through' : 'none' }}>
+                      {quest.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Monthly check-in */}
+              <div style={{ borderTop: '1px dashed var(--border-light)', paddingTop: '0.75rem', marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '0.50rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>2. Monthly Deposit Check-in:</span>
+                <p style={{ fontSize: '0.82rem', margin: 0, color: 'var(--text-muted)' }}>
+                  Did you make a deposit towards this goal level this month?
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    className={`btn ${level.checklist.monthlyChecked ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                    onClick={() => updateMonthlyCheck(level.levelNumber, true, '')}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${(!level.checklist.monthlyChecked && level.checklist.monthlyCustomAmount === '') ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                    onClick={() => updateMonthlyCheck(level.levelNumber, false, '')}
+                  >
+                    No
+                  </button>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>or enter:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{s}</span>
+                    <input
+                      type="number"
+                      className="form-input"
+                      placeholder="Custom Amount"
+                      value={level.checklist.monthlyCustomAmount || ''}
+                      onChange={(e) => updateMonthlyCheck(level.levelNumber, false, e.target.value)}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem', width: '100px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Sub-tabs switch */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -1101,7 +1453,7 @@ function LevelWorkspace({
 
           {/* Large subchat display */}
           <div style={{
-            flex: 1, minHeight: '380px', maxHeight: '420px', overflowY: 'auto',
+            flex: 1, minHeight: '380px', overflowY: 'auto',
             background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)',
             borderRadius: 8, padding: '1rem', fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: '1rem'
           }}>

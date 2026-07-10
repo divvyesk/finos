@@ -195,7 +195,7 @@ export async function extractAllFields(rawText) {
         responseMimeType: 'application/json',
         responseSchema: COMPENSATION_SCHEMA,
         temperature: 0,      // deterministic extraction — no creativity
-        maxOutputTokens: 2048,
+        maxOutputTokens: 1024,
       },
     });
 

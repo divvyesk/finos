@@ -3,6 +3,43 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
+function getDefaultChecklist(type) {
+  const checklists = {
+    starter_emergency: [
+      { id: 'se_1', label: 'Open a dedicated HYSA: Research and open a High-Yield Savings Account (HYSA) at a separate, online-only bank from your primary checking account.', completed: false },
+      { id: 'se_2', label: 'Automate Payday Transfer: Log into your primary checking account and set up a recurring automatic transfer to your new HYSA scheduled for the day after your paycheck lands.', completed: false },
+      { id: 'se_3', label: 'Define "Emergency": Write down a clear rule list of what constitutes an emergency (e.g. medical bills, car repairs, job loss) to prevent you from touching this money for regular shopping.', completed: false }
+    ],
+    debt: [
+      { id: 'db_1', label: 'Map Your Debt List: Create a list or spreadsheet of all your debts, recording their total balances, interest rates (APRs), and minimum monthly payments.', completed: false },
+      { id: 'db_2', label: 'Set Autopay on Minimums: Set up automatic minimum payments for all your debts so you never get hit with late fees or credit score damage.', completed: false },
+      { id: 'db_3', label: 'Lock Your Cards: Remove your credit cards from online shopping portals (Amazon, Google Pay, Apple Pay) to prevent adding new debt while paying down old balances.', completed: false },
+      { id: 'db_4', label: 'Choose Your Payoff Method: Formally choose either the Debt Avalanche method (paying highest interest first to save money) or Debt Snowball method (paying smallest balance first for psychological momentum).', completed: false }
+    ],
+    full_emergency: [
+      { id: 'fe_1', label: 'Verify APY Competitive Rates: Verify that your HYSA bank is offering a competitive interest rate (APY) compared to current market averages.', completed: false },
+      { id: 'fe_2', label: 'Adjust Savings Rules: Update your automated monthly payday savings transfer to reflect your new, higher Level 3 target contribution.', completed: false },
+      { id: 'fe_3', label: 'Quarterly Audit Schedule: Mark your calendar for a quarterly review check to adjust your core monthly expense numbers if your bills or rent change.', completed: false }
+    ],
+    investing: [
+      { id: 'iv_1', label: 'Open Investment Account: Open a low-cost taxable brokerage account or a tax-advantaged retirement account (like a Roth IRA or 401k equivalent).', completed: false },
+      { id: 'iv_2', label: 'Choose a Broad Market Index Fund: Select a low-cost, diversified index ETF that tracks the entire stock market (like VTI, VOO, or VT).', completed: false },
+      { id: 'iv_3', label: 'Turn on DRIP (Auto-Reinvestment): Enable Dividend Reinvestment (DRIP) inside your broker portal so any earnings are automatically re-invested.', completed: false },
+      { id: 'iv_4', label: 'Automate Investments: Set up a recurring monthly transfer and an automatic buy order (Auto-Invest) inside your brokerage account.', completed: false }
+    ],
+    goal: [
+      { id: 'gl_1', label: 'Open a Dedicated Sub-Bucket: Create a separate sub-account or savings "vault" named specifically after your goal.', completed: false },
+      { id: 'gl_2', label: 'Align Timeline with Asset Class: Verify your vault matches your timeline (HYSA/CDs for timelines under 3 years; balanced index portfolios for longer).', completed: false },
+      { id: 'gl_3', label: 'Automate Goal Savings: Set up a monthly automatic transfer from your checking account to your goal vault.', completed: false }
+    ]
+  };
+
+  return {
+    setup: checklists[type] || checklists.goal,
+    monthlyChecked: false,
+    monthlyCustomAmount: ''
+  };
+}
 
 /**
  * Parses user input to extract goal details.
@@ -145,7 +182,8 @@ export async function buildRoadmap({
     currentAmount: Math.min(savings, starterTarget),
     isCompleted: isStarterDone,
     allocation: 'High-Yield Savings Account (HYSA)',
-    type: 'starter_emergency'
+    type: 'starter_emergency',
+    checklist: getDefaultChecklist('starter_emergency')
   });
 
   // Remaining savings to offset high-interest debt or full emergency
@@ -173,7 +211,8 @@ export async function buildRoadmap({
     currentAmount: debtPaymentFromSavings,
     isCompleted: isDebtDone,
     allocation: 'Debt Payoff Accounts',
-    type: 'debt'
+    type: 'debt',
+    checklist: getDefaultChecklist('debt')
   });
 
   // Level 3: The Full Emergency Guardrail
@@ -188,7 +227,8 @@ export async function buildRoadmap({
     currentAmount: Math.min(remainingSavings, incrementalTarget),
     isCompleted: isFullDone,
     allocation: 'High-Yield Savings Account (HYSA)',
-    type: 'full_emergency'
+    type: 'full_emergency',
+    checklist: getDefaultChecklist('full_emergency')
   });
   remainingSavings = Math.max(0, remainingSavings - incrementalTarget);
 
@@ -202,7 +242,8 @@ export async function buildRoadmap({
     currentAmount: 0,
     isCompleted: false,
     allocation: 'Broad-Market ETFs / Index Funds',
-    type: 'investing'
+    type: 'investing',
+    checklist: getDefaultChecklist('investing')
   });
 
   // Level 5: The Goal Vault
@@ -216,7 +257,8 @@ export async function buildRoadmap({
     currentAmount: Math.min(goalCurrentAmount, targetSaveAmount),
     isCompleted: isGoalDone,
     allocation: timelineYears < 3 ? 'HYSA / CD' : 'Balanced Investment Portfolio',
-    type: 'goal'
+    type: 'goal',
+    checklist: getDefaultChecklist('goal')
   });
 
   // Invoke Gemini to generate personalized explanations for each level

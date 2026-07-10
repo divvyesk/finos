@@ -27,6 +27,13 @@
       "email": "kans@gmail.com",
       "password": "abcdefghi",
       "createdAt": "2026-07-10T02:14:07.287Z"
+    },
+    {
+      "id": "1783652825767",
+      "name": "yaahvi",
+      "email": "yaahvi@gmail.com",
+      "password": "abcdefghi",
+      "createdAt": "2026-07-10T03:07:05.767Z"
     }
   ],
   "uploads": [
@@ -1703,6 +1710,126 @@
         },
         "pto_days": 30,
         "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-10T03:41:00.143Z",
+      "source": "Manual Entry",
+      "ocrConfidence": 1,
+      "extractionMethod": "manual",
+      "data": {
+        "country": "United States",
+        "currency": "USD",
+        "state": "California",
+        "salary": 200000,
+        "signing_bonus": 15000,
+        "relocation_bonus": 2000,
+        "rsu_count": 1000,
+        "vesting_period_years": 4,
+        "stock_options": 500,
+        "pay_frequency": "biweekly",
+        "start_date": null,
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 6
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 90
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": [
+          "Start date not detected. You can add it manually if needed for roadmap planning.",
+          "Work location not detected. This may affect state tax jurisdiction calculations."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-10T03:43:22.374Z",
+      "source": "Manual Entry",
+      "ocrConfidence": 1,
+      "extractionMethod": "manual",
+      "data": {
+        "country": "United States",
+        "currency": "USD",
+        "state": "California",
+        "salary": 200000,
+        "signing_bonus": 15000,
+        "relocation_bonus": 2000,
+        "rsu_count": 1000,
+        "vesting_period_years": 4,
+        "stock_options": 500,
+        "pay_frequency": "biweekly",
+        "start_date": null,
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 6
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 90
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": [
+          "Start date not detected. You can add it manually if needed for roadmap planning.",
+          "Work location not detected. This may affect state tax jurisdiction calculations."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-10T03:54:30.585Z",
+      "source": "Manual Entry",
+      "ocrConfidence": 1,
+      "extractionMethod": "manual",
+      "data": {
+        "country": "United States",
+        "currency": "USD",
+        "state": "California",
+        "salary": 200000,
+        "signing_bonus": 15000,
+        "relocation_bonus": 2000,
+        "rsu_count": 1000,
+        "vesting_period_years": 4,
+        "stock_options": 500,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-07-26",
+        "location": "San Francisco",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 6
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 90
       },
       "validation": {
         "isValid": true,

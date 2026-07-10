@@ -7,6 +7,7 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -97,16 +98,39 @@ export default function Signup() {
 
           <div className="form-group">
             <label className="form-label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                style={{ paddingRight: '3.5rem' }}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  padding: '0.25rem 0.5rem',
+                  userSelect: 'none'
+                }}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
               Must be at least 6 characters
             </p>

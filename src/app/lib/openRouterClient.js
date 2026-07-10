@@ -135,7 +135,7 @@ export async function callOpenRouter({ model, contents, config = {} }) {
   }
 
   const primaryModel = mapModel(model);
-  const maxTokens = config.maxOutputTokens !== undefined ? config.maxOutputTokens : 2048;
+  const maxTokens = config.maxOutputTokens !== undefined ? config.maxOutputTokens : 1024;
 
   // Try the primary model first
   try {

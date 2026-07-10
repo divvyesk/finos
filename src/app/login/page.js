@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -83,15 +84,38 @@ export default function Login() {
 
           <div className="form-group">
             <label className="form-label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                style={{ paddingRight: '3.5rem' }}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  padding: '0.25rem 0.5rem',
+                  userSelect: 'none'
+                }}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
 
           <button
