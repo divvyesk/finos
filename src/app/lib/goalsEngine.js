@@ -239,11 +239,14 @@ Here is the Level-by-Level Roadmap we designed:
 ${levelsContext}
 
 Task:
-For EACH of the 5 levels, generate the explanations:
-1. "why": Explain the financial psychology or economic logic. (e.g. why emergency funds protect investments, why index funds beat inflation).
-2. "where": Recommend specific financial vehicles (e.g. Vanguard/Fidelity, HYSA providers, or payment strategies like debt avalanche). Do not mention specific brand names unless they are industry standards (like Index ETFs e.g. VTI, VOO).
-3. "how": Exact, tactical step-by-step instructions on what to configure (e.g. "open a secondary sub-account, set auto-transfer on payday"). Use real numbers.
-4. "what": A plain explanation of what the level is, written for a first-time earner.
+For EACH of the 5 levels, generate detailed, grounded, and highly educational explanations.
+The target reader is a first-time earner who has just received income for the first time in their life, is confused by financial jargon, and needs clear, reassuring guidance.
+Do not use hype, generic text, or filler. Explain key financial terms (like APY, index fund, liquidity, compound interest, and debt avalanche) using clear analogies.
+Every level explanation MUST contain exactly 3 to 4 complete, detailed sentences for each of the following keys:
+1. "why": The economic logic or financial psychology. Why is this sequence mathematically or behaviorally necessary? Explain what happens if they skip it.
+2. "where": Concrete recommendation of account types and financial vehicles (e.g. online HYSAs vs brokerage accounts, index ETFs like VTI/VOO, or paying high-rate debt accounts). Explain why this vehicle is suitable.
+3. "how": Exact, tactical step-by-step instructions. What should they type, click, or set up in their banking app or payroll portal on payday? (Use actual numbers from this user's parameters where possible).
+4. "what": A plain, simple overview of this level written in warm, reassuring terms so they instantly understand what this step represents for their safety.
 
 Return a JSON array of 5 objects corresponding to the levels in order. Confirming to this schema:
 [
@@ -264,6 +267,7 @@ Do not return any formatting, markdown markers, or explanations, just the JSON a
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.0
       }
     });
 
@@ -302,34 +306,34 @@ Do not return any formatting, markdown markers, or explanations, just the JSON a
     // Custom fallback explanations per level category
     const fallbacks = {
       starter_emergency: {
-        why: 'A starter emergency fund acts as a small, immediate financial shield to prevent you from taking on new high-interest debt for minor emergencies.',
-        where: 'Store this in a separate High-Yield Savings Account (HYSA) linked to your primary checking account for liquidity.',
-        how: 'Set up an automatic payday transfer of 10-20% of your paycheck into this account until you reach your starter buffer.',
-        what: 'This step establishes your immediate financial shield.'
+        why: 'A starter emergency fund acts as an immediate psychological and financial safety shield. When you first receive money, minor unexpected expenses like car repairs or medical bills can derail you, forcing you into expensive high-interest credit card debt. Having a small, dedicated cash buffer keeps you from slipping backward, letting you focus on your financial plan with confidence and peace of mind.',
+        where: 'Keep this money in a High-Yield Savings Account (HYSA) at an online-only bank separate from your daily checking account. Online HYSAs are insured up to normal government limits (like FDIC/DICGC) and pay much higher interest rates (called APY) than traditional brick-and-mortar banks. Keeping it separate prevents you from accidentally spending it on regular daily purchases while ensuring it remains accessible when needed.',
+        how: `Log into your employer payroll portal or bank app and configure a recurring transfer of 10% to 15% of your pay to automatically sweep into this new HYSA on every single payday. Keep this automatic process running without touching the money until the account balance hits your target of ${currency} ${starterTarget.toLocaleString()}. Treat this account like an emergency-only vault and do not check it for daily expenses.`,
+        what: 'This step builds a basic starter cash buffer of one full month of your core expenses to shield you from unexpected emergencies. Think of it as a small financial umbrella that protects you from life\'s minor storms so you never have to borrow high-interest money. It is the very first foundation block of your financial house, designed to keep you stable.'
       },
       debt: {
-        why: 'High-interest debt is a massive drag on your cash flow. Paying it off yields a guaranteed return equal to the interest rate of the loan.',
-        where: 'Pay directly to your high-interest credit cards or loan accounts using the Debt Avalanche or Debt Snowball method.',
-        how: 'Continue making minimum payments on all debts except the one with the highest interest rate, routing all extra savings capacity to that one.',
-        what: 'This step focuses on clearing debt to free up future cash flow.'
+        why: 'High-interest debt (often credit cards or personal loans carrying interest rates above 7%) acts like a financial leak in your bucket. Every month you carry this debt, compounding interest eats away at your hard-earned income, making banks richer while keeping you stuck. Paying off this debt yields a guaranteed return equal to the interest rate of the loan, which is mathematically the single best return on your money.',
+        where: 'Direct all your surplus cash flow to pay off your high-interest credit card accounts or loan portals. You can use the "Debt Avalanche" strategy by ranking debts from highest interest rate to lowest, or the "Debt Snowball" strategy by ranking them from smallest balance to largest. Focus your extra energy on one target at a time while maintaining the bare minimum payments on the rest.',
+        how: `List all your loans, balances, and annual percentage rates (APR) in a sheet, then set up automatic minimum payments on all accounts so you never miss a deadline. Route every extra dollar of your monthly cash flow surplus directly to the loan with the highest interest rate. Once that high-rate loan is fully paid off, roll its entire monthly payment amount into the next highest loan until they are all gone.`,
+        what: 'This step concentrates all your surplus cash flow on paying down expensive debts with interest rates higher than 7%. Think of high-interest debt as a weight dragging down your progress; by cutting it loose, you free up massive amounts of future income to save and invest. It transforms your debt payments back into wealth-building savings.'
       },
       full_emergency: {
-        why: 'Now that high-interest debt is cleared, building a full 3-month expense buffer protects your investments and career options from major life disruptions.',
-        where: 'Keep this in your High-Yield Savings Account (HYSA) or low-risk money market funds.',
-        how: 'Redirect the monthly cash flow that was previously paying off debt into your HYSA until the full target is met.',
-        what: 'This step builds your long-term safety shield.'
+        why: 'Now that high-interest debt is eliminated, a full emergency fund protects your investments and career options from major life disruptions like job loss or economic downturns. Without this buffer, a sudden loss of income would force you to sell your investments at a loss or borrow money. Having a complete 3-month expense cushion allows you to make calm, rational decisions during stressful life changes.',
+        where: 'Store this larger buffer in your existing High-Yield Savings Account (HYSA) or in low-risk Money Market Funds. These accounts keep your money secure and stable while earning interest, and they allow you to withdraw the cash within 1 to 2 business days. Do not invest this money in volatile assets like stocks or gold, as their value can crash exactly when you need them most.',
+        how: `Redirect the monthly cash flows that you were previously using to pay off debt into your dedicated High-Yield Savings Account (HYSA). Set up automatic monthly transfers to deposit your surplus cash flow into this account on every payday until the total incremental buffer of ${currency} ${incrementalTarget.toLocaleString()} is saved. Mark the goal as complete and leave the balance untouched.`,
+        what: 'This step completes your long-term security shield by expanding your starter buffer up to a full three months of core living expenses. It acts as a robust financial mattress that cushions you during major disruptions like temporary unemployment or health emergencies. Once this is filled, your survival is fully secured, letting you start building real wealth.'
       },
       investing: {
-        why: 'To grow wealth and beat inflation over the long term, you need to invest in assets that appreciate. Compounding returns build security.',
-        where: 'Open a low-cost brokerage account or tax-advantaged account (like a Roth IRA) and invest in broad-market low-cost index ETFs.',
-        how: 'Schedule automated monthly purchases of a broad market index ETF (like VTI or VOO) inside your brokerage account.',
-        what: 'This step introduces automated investing.'
+        why: 'To build long-term wealth and protect your money from losing purchasing power to inflation, you need to invest in assets that grow over time. While savings accounts keep money safe, they do not grow wealth. Compounding interest allows your money to earn its own money, and over 10 to 20 years, this compound growth becomes the main driver of your net worth.',
+        where: 'Open a low-cost brokerage account or a tax-advantaged retirement account (like a Roth IRA or equivalent) at a major custodian. Invest the funds in broad-market low-cost index ETFs or Mutual Funds (such as funds tracking the S&P 500 or Total Stock Market like VTI or VOO). These index funds package thousands of companies together, giving you instant diversification and safety.',
+        how: `Set up a monthly recurring automatic transfer from your checking account into your new brokerage or retirement account on the day after you get paid. Configure the brokerage account to automatically buy shares of your chosen index ETF (like VTI or VOO) using that money every month. Turn on "Dividend Reinvestment" (DRIP) so any earnings are automatically put back to work to speed up compounding.`,
+        what: 'This step introduces you to the world of automated investing by regularly putting 10% to 15% of your savings capacity into diversified stock index funds. Think of it as buying small shares of the world\'s largest companies so they work for you while you sleep. It is not trading or gambling; it is a passive, slow-and-steady system to build long-term wealth.'
       },
       goal: {
-        why: 'Saving specifically for your goal ensures you do not compromise your retirement or emergency buffer to purchase your asset.',
-        where: `For short timelines under 3 years, keep it in a secure HYSA or CD. For longer timelines, you can use a balanced investment portfolio.`,
-        how: `Create a dedicated savings bucket named after your goal and set up automatic transfers for the calculated monthly savings target.`,
-        what: `This step accumulates the final funds to purchase your goal.`
+        why: 'Saving specifically for your major life goal (like a house, car, or education) ensures you do not compromise your retirement or touch your emergency buffer. Buying a major asset using dedicated savings prevents you from taking on fresh high-interest debt that would set you back. It keeps your overall financial system balanced, secure, and aligned with your personal values.',
+        where: `If your goal timeline is short (less than 3 years), keep the funds in a secure HYSA or Certificate of Deposit (CD) to protect your principal from market volatility. If your timeline is longer (more than 3 years), you can use a balanced investment portfolio of conservative index ETFs and government bonds to grow the funds faster.`,
+        how: `Create a separate sub-account or savings bucket named after your goal inside your bank or brokerage app. Calculate your required monthly contribution and configure an automatic recurring deposit of ${currency} ${(Math.round(targetCost / (timelineYears * 12))).toLocaleString()} per month into this dedicated bucket. Track the progress bar regularly until you hit the target.`,
+        what: `This step accumulates the final target funds of ${currency} ${targetSaveAmount.toLocaleString()} to purchase your specific goal. It keeps this major purchase isolated from the rest of your wealth so you never have to choose between buying your goal and staying financially secure. It is the final destination vault of your custom financial roadmap.`
       }
     };
 

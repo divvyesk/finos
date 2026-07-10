@@ -68,6 +68,8 @@ finance/
 7. **Cash Flow Surplus Indicators**: Integrated net take-home pay tracking from Step 2 into the Step 3 Baseline Wizard. Created a "Monthly Cash Flow Summary" panel that live-calculates the surplus money left over (take-home minus core expenses) before proceeding. Also added a "Your Monthly Surplus" card to the roadmap dashboard metrics grid.
 8. **Five-Level Starter Emergency Fund Roadmap**: Shifted from a 4-level system to a 5-level system to support the "Starter Emergency Fund" approach. The sequence is now: (1) Starter Emergency Shield (1 month of core expenses target), (2) Debt Decelerator (high-interest debt pay down), (3) Full Emergency Guardrail (build remainder up to 3 months of core expenses), (4) Investment Launchpad (automated index funds investing), and (5) Goal Vault (primary goal accumulation).
 9. **Granular Savings & Standardized Debt Baseline Inputs**: Replaced the single savings number input in Step 3 with a list builder supporting selection dropdowns for type (Regular Savings, HYSA, Investment) and popular HYSA banks, as well as standardized debt category dropdowns. Dynamic calculated sums are passed alongside detailed breakdown list states to MongoDB.
+10. **Automatic OpenRouter Model Fallbacks & JSON Sanitization**: Modified `openRouterClient.js` to execute calls via an inner request executor and catch exceptions. If the primary model (`google/gemini-2.5-flash`) fails, it enters a try-retry loop attempting fallback models in sequence (`meta-llama/llama-3.1-8b-instruct`, `google/gemini-2.5-pro`, `anthropic/claude-3-haiku`). Added automated markdown code block cleaning (`cleanJSONText`) on returned JSON text whenever `responseMimeType: 'application/json'` is set to avoid formatting syntax errors during client parsing.
+11. **Grounded & Empathetic Level Explanations**: Refined the prompt inside `goalsEngine.js` to instruct the AI with temperature `0.0` (deterministic outputs) to provide detailed explanations (exactly 3-4 sentences per section) using clear analogies. Rewrote the fallback templates inside `goalsEngine.js` to provide comprehensive, detailed, and warm instructions for first-time earners.
 
 ---
 
@@ -75,7 +77,7 @@ finance/
 
 - **Goal**: Maintain code alignment and support subsequent roadmap refinement requests.
 - **Why**: Deliver clear, transparent, and actionable personal finance tools.
-- **State**: The `brain.md` file is actively synchronized. Detailed savings and debt builders are fully functional in the baseline wizard and persist inside MongoDB.
+- **State**: The `brain.md` file is actively synchronized. Detailed, grounded level descriptions are fully integrated into the goals engine with deterministic parameters and expanded fallback templates.
 
 ---
 
