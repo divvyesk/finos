@@ -83,10 +83,11 @@ export default function MascotScrollytelling({ user }) {
     const drawFrame = (progress) => {
       if (!ctx || !imagesRef.current.length) return;
       
-      // Map progress (0 to 1) to frame index (1 to TOTAL_FRAMES)
+      // Map progress (0 to 0.85) to frame index (1 to TOTAL_FRAMES)
+      const frameProgress = Math.min(1, Math.max(0, progress / 0.85));
       const frameIndex = Math.min(
         TOTAL_FRAMES,
-        Math.max(1, Math.ceil(progress * TOTAL_FRAMES))
+        Math.max(1, Math.ceil(frameProgress * TOTAL_FRAMES))
       );
       
       // Fallback: If current frame isn't loaded (Phase 2 still running), use the nearest previous loaded frame
@@ -145,21 +146,34 @@ export default function MascotScrollytelling({ user }) {
   }, [isLoaded, smoothProgress]);
 
   // -- Text Overlay Animations --
-  // Beat A: 0-20% (0.0 to 0.2)
-  const opacityA = useTransform(smoothProgress, [0, 0.02, 0.18, 0.2], [0, 1, 1, 0]);
-  const translateYA = useTransform(smoothProgress, [0, 0.02, 0.18, 0.2], [20, 0, 0, -20]);
+  // Scaled by 0.85 to align with the new 0-0.85 frame sequence
+  
+  // Beat A: (0 to 0.17)
+  const opacityA = useTransform(smoothProgress, [0, 0.017, 0.153, 0.17], [0, 1, 1, 0]);
+  const translateYA = useTransform(smoothProgress, [0, 0.017, 0.153, 0.17], [40, 0, 0, -40]);
+  const scaleA = useTransform(smoothProgress, [0, 0.017, 0.153, 0.17], [1.05, 1, 1, 0.95]);
+  const filterA = useTransform(smoothProgress, [0, 0.017, 0.153, 0.17], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
 
-  // Beat B: 25-45% (0.25 to 0.45)
-  const opacityB = useTransform(smoothProgress, [0.25, 0.27, 0.43, 0.45], [0, 1, 1, 0]);
-  const translateYB = useTransform(smoothProgress, [0.25, 0.27, 0.43, 0.45], [20, 0, 0, -20]);
+  // Beat B: (0.21 to 0.38)
+  const opacityB = useTransform(smoothProgress, [0.21, 0.23, 0.36, 0.38], [0, 1, 1, 0]);
+  const translateYB = useTransform(smoothProgress, [0.21, 0.23, 0.36, 0.38], [40, 0, 0, -40]);
+  const scaleB = useTransform(smoothProgress, [0.21, 0.23, 0.36, 0.38], [1.05, 1, 1, 0.95]);
+  const filterB = useTransform(smoothProgress, [0.21, 0.23, 0.36, 0.38], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
 
-  // Beat C: 50-70% (0.5 to 0.7)
-  const opacityC = useTransform(smoothProgress, [0.5, 0.52, 0.68, 0.7], [0, 1, 1, 0]);
-  const translateYC = useTransform(smoothProgress, [0.5, 0.52, 0.68, 0.7], [20, 0, 0, -20]);
+  // Beat C: (0.708 to 0.81)
+  const opacityC = useTransform(smoothProgress, [0.708, 0.72, 0.79, 0.81], [0, 1, 1, 0]);
+  const translateYC = useTransform(smoothProgress, [0.708, 0.72, 0.79, 0.81], [40, 0, 0, -40]);
+  const scaleC = useTransform(smoothProgress, [0.708, 0.72, 0.79, 0.81], [1.05, 1, 1, 0.95]);
+  const filterC = useTransform(smoothProgress, [0.708, 0.72, 0.79, 0.81], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
 
-  // Beat D: 75-95% (0.75 to 0.95)
-  const opacityD = useTransform(smoothProgress, [0.75, 0.77, 0.93, 0.95], [0, 1, 1, 0]);
-  const translateYD = useTransform(smoothProgress, [0.75, 0.77, 0.93, 0.95], [20, 0, 0, -20]);
+  // Canvas background blur after frames stop
+  const canvasFilter = useTransform(smoothProgress, [0.85, 0.92], ["blur(0px)", "blur(15px)"]);
+
+  // Beat D: (0.88 to 1.0) - Appears while background blurs
+  const opacityD = useTransform(smoothProgress, [0.88, 0.95], [0, 1]);
+  const translateYD = useTransform(smoothProgress, [0.88, 0.95], [40, 0]);
+  const scaleD = useTransform(smoothProgress, [0.88, 0.95], [1.05, 1]);
+  const filterD = useTransform(smoothProgress, [0.88, 0.95], ["blur(12px)", "blur(0px)"]);
   
   // Indicator opacity
   const opacityIndicator = useTransform(smoothProgress, [0, 0.05], [1, 0]);
@@ -168,7 +182,7 @@ export default function MascotScrollytelling({ user }) {
     <div 
       ref={containerRef} 
       style={{ 
-        height: '400vh', 
+        height: '500vh', 
         position: 'relative',
         backgroundColor: '#e5e5e5' // Match seamless background
       }}
@@ -185,6 +199,21 @@ export default function MascotScrollytelling({ user }) {
           justifyContent: 'center'
         }}
       >
+        {/* Persistent Logo */}
+        <div style={{
+          position: 'absolute',
+          top: '40px',
+          left: '5%',
+          zIndex: 50,
+          fontWeight: 800,
+          fontSize: '1.5rem',
+          letterSpacing: '-0.04em',
+          color: '#1d1d1f',
+          pointerEvents: 'none'
+        }}>
+          FinOS
+        </div>
+
         {/* Loading State */}
         {!isLoaded && (
           <motion.div
@@ -226,7 +255,7 @@ export default function MascotScrollytelling({ user }) {
         )}
 
         {/* Canvas for Scrollytelling */}
-        <canvas 
+        <motion.canvas 
           ref={canvasRef}
           style={{
             position: 'absolute',
@@ -235,6 +264,7 @@ export default function MascotScrollytelling({ user }) {
             width: '100%',
             height: '100%',
             opacity: isLoaded ? 1 : 0,
+            filter: canvasFilter,
             transition: 'opacity 0.5s ease'
           }}
         />
@@ -276,21 +306,24 @@ export default function MascotScrollytelling({ user }) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'center',
-            textAlign: 'center',
-            padding: '0 2rem',
+            textAlign: 'left',
+            padding: '0 5%',
             opacity: opacityA,
             y: translateYA,
+            scale: scaleA,
+            filter: filterA,
             zIndex: 20,
             pointerEvents: 'none'
           }}
         >
-          <div style={{ maxWidth: '800px' }}>
-            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 5rem)', lineHeight: 1, marginBottom: '1rem', letterSpacing: '-0.05em' }}>
-              DECODE YOUR<br />PAYCHECK
+          <div style={{ maxWidth: '600px' }}>
+            <h2 style={{ fontSize: 'clamp(3.5rem, 8vw, 8rem)', lineHeight: 0.9, marginBottom: '1.5rem', letterSpacing: '-0.06em' }}>
+              <span style={{ color: 'rgba(0,0,0,0.35)' }}>DECODE YOUR</span><br />
+              <span style={{ color: '#000' }}>PAYCHECK</span>
             </h2>
-            <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'rgba(0,0,0,0.6)', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)', color: 'rgba(0,0,0,0.8)', maxWidth: '500px', lineHeight: 1.5, fontWeight: 500 }}>
               Finance is intimidating. FinOS makes it yours. Welcome to your personalized financial roadmap.
             </p>
           </div>
@@ -311,15 +344,18 @@ export default function MascotScrollytelling({ user }) {
             padding: '0 5%',
             opacity: opacityB,
             y: translateYB,
+            scale: scaleB,
+            filter: filterB,
             zIndex: 20,
             pointerEvents: 'none'
           }}
         >
-          <div style={{ maxWidth: '500px' }}>
-            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.04em' }}>
-              MASTER YOUR<br />TAXES
+          <div style={{ maxWidth: '600px' }}>
+            <h2 style={{ fontSize: 'clamp(3.5rem, 8vw, 8rem)', lineHeight: 0.9, marginBottom: '1.5rem', letterSpacing: '-0.06em' }}>
+              <span style={{ color: 'rgba(0,0,0,0.35)' }}>MASTER YOUR</span><br />
+              <span style={{ color: '#000' }}>TAXES</span>
             </h2>
-            <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.15rem)', color: 'rgba(0,0,0,0.6)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)', color: 'rgba(0,0,0,0.8)', maxWidth: '500px', lineHeight: 1.5, fontWeight: 500 }}>
               We extract the noise from your offer letter and show exactly what you take home. No jargon, just math.
             </p>
           </div>
@@ -341,21 +377,25 @@ export default function MascotScrollytelling({ user }) {
             padding: '0 5%',
             opacity: opacityC,
             y: translateYC,
+            scale: scaleC,
+            filter: filterC,
             zIndex: 20,
             pointerEvents: 'none'
           }}
         >
-          <div style={{ maxWidth: '500px' }}>
-            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.04em' }}>
-              SIMULATE YOUR<br />ROADMAP
+          <div style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <h2 style={{ fontSize: 'clamp(3.5rem, 6.5vw, 7rem)', lineHeight: 0.9, marginBottom: '1.5rem', letterSpacing: '-0.06em', textAlign: 'right' }}>
+              <span style={{ color: 'rgba(0,0,0,0.4)', display: 'block' }}>SIMULATE</span>
+              <span style={{ color: 'rgba(0,0,0,0.4)', display: 'block' }}>YOUR</span>
+              <span style={{ color: '#000', display: 'block' }}>ROADMAP</span>
             </h2>
-            <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.15rem)', color: 'rgba(0,0,0,0.6)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.25rem)', color: 'rgba(0,0,0,0.8)', maxWidth: '400px', lineHeight: 1.5, fontWeight: 500, textAlign: 'right' }}>
               Watch your goals come to life. Track your runway, allocate your surplus, and unlock your financial future.
             </p>
           </div>
         </motion.div>
 
-        {/* --- Beat D: 75-95% --- */}
+        {/* --- Beat D: 88-100% --- */}
         <motion.div
           style={{
             position: 'absolute',
@@ -368,26 +408,48 @@ export default function MascotScrollytelling({ user }) {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '0 2rem',
+            padding: '0 5%',
             opacity: opacityD,
             y: translateYD,
+            scale: scaleD,
+            filter: filterD,
             zIndex: 20,
             pointerEvents: 'auto'
           }}
         >
-          <div style={{ maxWidth: '800px' }}>
-            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', lineHeight: 1.1, marginBottom: '2rem', letterSpacing: '-0.05em' }}>
-              YOUR JOURNEY<br />STARTS HERE
+          <style>{`
+            @keyframes shimmer-text {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+            .apple-gradient-text {
+              background: linear-gradient(to right, #FF0080, #FF8C00, #FFCD00, #FF8C00, #FF0080);
+              background-size: 200% auto;
+              color: transparent;
+              -webkit-background-clip: text;
+              background-clip: text;
+              -webkit-text-fill-color: transparent;
+              animation: shimmer-text 5s linear infinite;
+              display: inline-block;
+            }
+          `}</style>
+          <div style={{ maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 style={{ fontSize: 'clamp(3.5rem, 8vw, 8rem)', lineHeight: 0.95, marginBottom: '2.5rem', letterSpacing: '-0.05em', fontWeight: 800 }}>
+              <span style={{ color: '#1d1d1f' }}>YOUR JOURNEY</span><br />
+              <span className="apple-gradient-text">STARTS HERE</span>
             </h2>
-            {user ? (
-              <a href="/dashboard" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
-                Go to Dashboard
-              </a>
-            ) : (
-              <a href="/signup" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
-                Start My Financial Journey
-              </a>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {user ? (
+                <a href="/dashboard" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
+                  Go to Dashboard
+                </a>
+              ) : (
+                <a href="/signup" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
+                  Start My Financial Journey
+                </a>
+              )}
+            </div>
           </div>
         </motion.div>
 

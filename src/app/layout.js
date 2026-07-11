@@ -3,7 +3,7 @@ import { getData } from './lib/db';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata = {
   title: 'FinOS - AI Financial Onboarding Operating System',
@@ -29,7 +29,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${inter.className}`}>
         <main>{children}</main>
       </body>
     </html>
