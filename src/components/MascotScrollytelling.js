@@ -3,13 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 
-const TOTAL_FRAMES = 135;
+const TOTAL_FRAMES = 270;
 
 export default function MascotScrollytelling({ user }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   
-  const [images, setImages] = useState([]);
+  const imagesRef = useRef([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Framer Motion scroll hooks
@@ -24,33 +24,43 @@ export default function MascotScrollytelling({ user }) {
     restDelta: 0.001,
   });
 
-  // Preload images
+  // Preload images (Adaptive Interlaced Loading)
   useEffect(() => {
-    const loadedImages = [];
-    let loadedCount = 0;
+    let loadedOddCount = 0;
+    const targetOddCount = Math.floor((TOTAL_FRAMES + 1) / 2); // 135
 
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    const loadEvenFrames = () => {
+      for (let i = 2; i <= TOTAL_FRAMES; i += 2) {
+        const img = new Image();
+        const paddedIndex = i.toString().padStart(5, '0');
+        img.onload = () => {
+          imagesRef.current[i] = img;
+        };
+        img.src = `/frames60/frame_${paddedIndex}.jpg`;
+      }
+    };
+
+    // Phase 1: Load odd frames (30fps baseline)
+    for (let i = 1; i <= TOTAL_FRAMES; i += 2) {
       const img = new Image();
       const paddedIndex = i.toString().padStart(5, '0');
       
-      const handleLoad = () => {
-        loadedCount++;
-        if (loadedCount === TOTAL_FRAMES) {
-          setIsLoaded(true);
+      img.onload = () => {
+        imagesRef.current[i] = img;
+        loadedOddCount++;
+        if (loadedOddCount === targetOddCount) {
+          setIsLoaded(true); // Unlock UI (30fps ready)
+          loadEvenFrames();  // Start Phase 2 (60fps upgrade)
         }
       };
-
-      img.onload = handleLoad;
-      img.src = `/frames30/frame_${paddedIndex}.jpg`;
       
-      loadedImages.push(img);
+      img.src = `/frames60/frame_${paddedIndex}.jpg`;
     }
-    setImages(loadedImages);
   }, []);
 
   // Canvas drawing logic
   useEffect(() => {
-    if (!isLoaded || images.length === 0 || !canvasRef.current) return;
+    if (!isLoaded || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -71,15 +81,25 @@ export default function MascotScrollytelling({ user }) {
     };
 
     const drawFrame = (progress) => {
-      if (!ctx || images.length === 0) return;
+      if (!ctx || !imagesRef.current.length) return;
       
-      // Map progress (0 to 1) to frame index (0 to TOTAL_FRAMES - 1)
+      // Map progress (0 to 1) to frame index (1 to TOTAL_FRAMES)
       const frameIndex = Math.min(
-        TOTAL_FRAMES - 1,
-        Math.floor(progress * TOTAL_FRAMES)
+        TOTAL_FRAMES,
+        Math.max(1, Math.ceil(progress * TOTAL_FRAMES))
       );
       
-      const img = images[frameIndex];
+      // Fallback: If current frame isn't loaded (Phase 2 still running), use the nearest previous loaded frame
+      let img = imagesRef.current[frameIndex];
+      if (!img || !img.complete) {
+        for (let i = frameIndex - 1; i >= 1; i--) {
+          if (imagesRef.current[i] && imagesRef.current[i].complete) {
+            img = imagesRef.current[i];
+            break;
+          }
+        }
+      }
+      
       if (!img || !img.complete) return;
 
       const rect = canvas.parentElement.getBoundingClientRect();
@@ -122,7 +142,7 @@ export default function MascotScrollytelling({ user }) {
       window.removeEventListener('resize', updateCanvasSize);
       unsubscribe();
     };
-  }, [isLoaded, images, smoothProgress]);
+  }, [isLoaded, smoothProgress]);
 
   // -- Text Overlay Animations --
   // Beat A: 0-20% (0.0 to 0.2)

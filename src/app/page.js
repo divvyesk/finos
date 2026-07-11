@@ -22,18 +22,6 @@ export default async function Home() {
   return (
     <div style={{ backgroundColor: '#e5e5e5', minHeight: '100vh' }}>
       <MascotScrollytelling user={user} />
-      
-      {/* Footer */}
-      <footer style={{ 
-        borderTop: '1px solid rgba(0,0,0,0.08)', 
-        padding: '2rem 0', 
-        textAlign: 'center', 
-        color: 'rgba(0,0,0,0.4)', 
-        fontSize: '0.9rem',
-        backgroundColor: '#e5e5e5'
-      }}>
-        <p>© {new Date().getFullYear()} FinOS Operating System. Crafted for First-Time Earners and AI Engineers.</p>
-      </footer>
     </div>
   );
 }
