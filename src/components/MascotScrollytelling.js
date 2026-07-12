@@ -8,7 +8,7 @@ const TOTAL_FRAMES = 270;
 export default function MascotScrollytelling({ user }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  
+
   const imagesRef = useRef([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -44,7 +44,7 @@ export default function MascotScrollytelling({ user }) {
     for (let i = 1; i <= TOTAL_FRAMES; i += 2) {
       const img = new Image();
       const paddedIndex = i.toString().padStart(5, '0');
-      
+
       img.onload = () => {
         imagesRef.current[i] = img;
         loadedOddCount++;
@@ -53,7 +53,7 @@ export default function MascotScrollytelling({ user }) {
           loadEvenFrames();  // Start Phase 2 (60fps upgrade)
         }
       };
-      
+
       img.src = `/frames60/frame_${paddedIndex}.jpg`;
     }
   }, []);
@@ -64,32 +64,32 @@ export default function MascotScrollytelling({ user }) {
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    
+
     // Set internal resolution based on device pixel ratio for crisp rendering
     const updateCanvasSize = () => {
       const dpr = window.devicePixelRatio || 1;
       // Get logical size of the container
       const rect = canvas.parentElement.getBoundingClientRect();
-      
+
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
-      
+
       ctx.scale(dpr, dpr);
-      
+
       // Draw immediately on resize
       drawFrame(smoothProgress.get());
     };
 
     const drawFrame = (progress) => {
       if (!ctx || !imagesRef.current.length) return;
-      
+
       // Map progress (0 to 0.70) to frame index (1 to TOTAL_FRAMES)
       const frameProgress = Math.min(1, Math.max(0, progress / 0.70));
       const frameIndex = Math.min(
         TOTAL_FRAMES,
         Math.max(1, Math.ceil(frameProgress * TOTAL_FRAMES))
       );
-      
+
       // Fallback: If current frame isn't loaded (Phase 2 still running), use the nearest previous loaded frame
       let img = imagesRef.current[frameIndex];
       if (!img || !img.complete) {
@@ -100,7 +100,7 @@ export default function MascotScrollytelling({ user }) {
           }
         }
       }
-      
+
       if (!img || !img.complete) return;
 
       const rect = canvas.parentElement.getBoundingClientRect();
@@ -113,9 +113,9 @@ export default function MascotScrollytelling({ user }) {
       // Implement 'cover' object-fit logic to fill screen completely
       const imgRatio = img.width / img.height;
       const canvasRatio = canvasWidth / canvasHeight;
-      
+
       let renderWidth, renderHeight;
-      
+
       if (canvasRatio < imgRatio) {
         renderHeight = canvasHeight;
         renderWidth = canvasHeight * imgRatio;
@@ -123,7 +123,7 @@ export default function MascotScrollytelling({ user }) {
         renderWidth = canvasWidth;
         renderHeight = canvasWidth / imgRatio;
       }
-      
+
       const offsetX = (canvasWidth - renderWidth) / 2;
       const offsetY = (canvasHeight - renderHeight) / 2;
 
@@ -147,7 +147,7 @@ export default function MascotScrollytelling({ user }) {
 
   // -- Text Overlay Animations --
   // Scaled by 0.70 to align with the new 0-0.70 frame sequence
-  
+
   // Beat A: (0 to 0.14)
   const opacityA = useTransform(smoothProgress, [0, 0.014, 0.126, 0.14], [0, 1, 1, 0]);
   const translateYA = useTransform(smoothProgress, [0, 0.014, 0.126, 0.14], [40, 0, 0, -40]);
@@ -166,32 +166,38 @@ export default function MascotScrollytelling({ user }) {
   const scaleC = useTransform(smoothProgress, [0.583, 0.595, 0.651, 0.665], [1.05, 1, 1, 0.95]);
   const filterC = useTransform(smoothProgress, [0.583, 0.595, 0.651, 0.665], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
 
-  // Canvas background blur (delayed to hold frame 270 perfectly still)
-  const canvasFilter = useTransform(smoothProgress, [0.80, 0.90], ["blur(0px)", "blur(15px)"]);
+  // Canvas background blur (starts blurring when Penny beat arrives)
+  const canvasFilter = useTransform(smoothProgress, [0.70, 0.73], ["blur(0px)", "blur(15px)"]);
 
-  // Beat D: Appears as background blurs
-  const opacityD = useTransform(smoothProgress, [0.85, 0.95], [0, 1]);
-  const translateYD = useTransform(smoothProgress, [0.85, 0.95], [40, 0]);
-  const scaleD = useTransform(smoothProgress, [0.85, 0.95], [1.05, 1]);
-  const filterD = useTransform(smoothProgress, [0.85, 0.95], ["blur(12px)", "blur(0px)"]);
-  
+  // Beat E: Meet Penny (0.72 to 0.85)
+  const opacityE = useTransform(smoothProgress, [0.72, 0.74, 0.83, 0.85], [0, 1, 1, 0]);
+  const translateYE = useTransform(smoothProgress, [0.72, 0.74, 0.83, 0.85], [40, 0, 0, -40]);
+  const scaleE = useTransform(smoothProgress, [0.72, 0.74, 0.83, 0.85], [1.05, 1, 1, 0.95]);
+  const filterE = useTransform(smoothProgress, [0.72, 0.74, 0.83, 0.85], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
+
+  // Beat F: Final CTA (Appears as background blurs)
+  const opacityF = useTransform(smoothProgress, [0.90, 0.95], [0, 1]);
+  const translateYF = useTransform(smoothProgress, [0.90, 0.95], [40, 0]);
+  const scaleF = useTransform(smoothProgress, [0.90, 0.95], [1.05, 1]);
+  const filterF = useTransform(smoothProgress, [0.90, 0.95], ["blur(12px)", "blur(0px)"]);
+
   // Indicator opacity
   const opacityIndicator = useTransform(smoothProgress, [0, 0.05], [1, 0]);
 
   return (
-    <div 
-      ref={containerRef} 
-      style={{ 
-        height: '600vh', 
+    <div
+      ref={containerRef}
+      style={{
+        height: '800vh',
         position: 'relative',
         backgroundColor: '#e5e5e5' // Match seamless background
       }}
     >
-      <div 
-        style={{ 
-          position: 'sticky', 
-          top: 0, 
-          height: '100vh', 
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
           width: '100%',
           overflow: 'hidden',
           display: 'flex',
@@ -238,8 +244,8 @@ export default function MascotScrollytelling({ user }) {
             {/* Display the first frame as the bouncing placeholder if we can load it quickly, 
                 or just a CSS placeholder if we want to be safe */}
             <div style={{
-              width: '120px', 
-              height: '120px', 
+              width: '120px',
+              height: '120px',
               borderRadius: '50%',
               background: 'rgba(0,0,0,0.05)',
               display: 'flex',
@@ -255,7 +261,7 @@ export default function MascotScrollytelling({ user }) {
         )}
 
         {/* Canvas for Scrollytelling */}
-        <motion.canvas 
+        <motion.canvas
           ref={canvasRef}
           style={{
             position: 'absolute',
@@ -269,7 +275,7 @@ export default function MascotScrollytelling({ user }) {
           }}
         />
 
-        {/* White Wash Overlay for Beat D Readability */}
+        {/* White Wash Overlay for Beat E & F Readability */}
         <motion.div
           style={{
             position: 'absolute',
@@ -278,7 +284,7 @@ export default function MascotScrollytelling({ user }) {
             width: '100%',
             height: '100%',
             backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            opacity: opacityD,
+            opacity: useTransform(smoothProgress, [0.70, 0.73], [0, 1]), // Fade in the white wash for Penny and CTA
             pointerEvents: 'none',
             zIndex: 5
           }}
@@ -303,8 +309,8 @@ export default function MascotScrollytelling({ user }) {
             }}
           >
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Scroll to Explore</span>
-            <motion.div 
-              animate={{ y: [0, 8, 0] }} 
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               style={{ width: '1px', height: '30px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)' }}
             />
@@ -410,7 +416,100 @@ export default function MascotScrollytelling({ user }) {
           </div>
         </motion.div>
 
-        {/* --- Beat D: 88-100% --- */}
+        {/* --- Beat E: Meet Penny (72-85%) --- */}
+        <motion.div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 5%',
+            opacity: opacityE,
+            y: translateYE,
+            scale: scaleE,
+            filter: filterE,
+            zIndex: 20,
+            pointerEvents: 'auto'
+          }}
+        >
+          <div style={{
+            maxWidth: '1200px',
+            width: '100%',
+            background: 'rgba(255, 255, 255, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            padding: '3rem',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)',
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '3rem',
+            alignItems: 'center'
+          }}>
+            {/* Penny Image */}
+            <div style={{ flex: '0 0 340px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{
+                width: '340px',
+                height: '420px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                background: '#f0f0f0',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem'
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/headshot-no-bg.png"
+                  alt="Penny, the Feline Financial Astronaut"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    // Fallback if user hasn't saved the mascot image yet
+                    e.target.src = 'https://placehold.co/300x400/eeeeee/999999?text=Penny';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Backstory */}
+            <div style={{ flex: '5' }}>
+              <h3 style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, color: '#575c8d', marginBottom: '0.5rem' }}>
+                Before we start...
+              </h3>
+              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.04em', color: '#1d1d1f' }}>
+                Meet Penny. <br />
+                <span style={{ color: 'rgba(0,0,0,0.4)' }}>Your Financial Co-Pilot.</span>
+              </h2>
+
+              <div style={{ fontSize: '1.1rem', color: 'rgba(0,0,0,0.8)', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <p>
+                  Penny just graduated from Feline University and landed his very first "VP of Midnight Zoomies" corporate job. To celebrate, he bought a fancy three-piece suit and his favorite toy astronaut helmet—because his ultimate dream is to one day afford a trip to space (or at least buy a really, really tall cat tree).
+                </p>
+                <p>
+                  But when Penny got his first paycheck, he was completely overwhelmed. <em>Wait, what are taxes? Why did the government take a bite out of my tuna fund?</em> He didn't know if he should blow it all on a lifetime supply of premium catnip, stash the cash under his favorite napping cushion, or what an "Emergency Shield" even was. (Was it some sort of magical forcefield to keep the dreaded Vacuum Monster at bay?)
+                </p>
+                <p>
+                  <strong>Penny isn't an all-knowing advisor.</strong> He’s right there in the trenches with you, learning how to handle his first real paycheck. Every step you take on your roadmap, Penny takes with you!
+                </p>
+              </div>
+
+              <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#575c8d', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                  ↓
+                </motion.div>
+                Keep scrolling to start your journey
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* --- Beat F: Final CTA (88-100%) --- */}
         <motion.div
           style={{
             position: 'absolute',
@@ -424,10 +523,10 @@ export default function MascotScrollytelling({ user }) {
             justifyContent: 'center',
             textAlign: 'center',
             padding: '0 5%',
-            opacity: opacityD,
-            y: translateYD,
-            scale: scaleD,
-            filter: filterD,
+            opacity: opacityF,
+            y: translateYF,
+            scale: scaleF,
+            filter: filterF,
             zIndex: 20,
             pointerEvents: 'auto'
           }}

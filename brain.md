@@ -81,6 +81,7 @@ finance/
 20. **Partial Progress for Custom Deposits**: Modified the checklist progress helper `getLevelProgress` in `src/app/dashboard/Step3Panel.js` to compute a partial completion fraction (`monthlyDoneFraction`) based on the ratio of the entered custom deposit amount to the active monthly target. This prevents custom deposits from automatically counting as 100% complete for the monthly checklist task unless the target amount is fully met.
 21. **Fixed Advisor Chat Spacing Gap**: Removed the rigid `maxHeight: '420px'` style from the Level Advisor Chat history container in `src/app/dashboard/Step3Panel.js`. This allows the chat window to dynamically expand to the bottom of the card column, eliminating the empty black vertical gap between the chat history and the input form.
 22. **Removed Steps 4-8 from UI**: Shortened the `JOURNEY_STEPS` sidebar array in `src/app/dashboard/page.js` to only include the first three essential steps (`Understand Income`, `Understand Taxes`, and `Define Goals`). Replaced the "Proceed to Step 4" button in the roadmap generation card (`src/app/dashboard/Step3Panel.js`) with an inline status indicator `✓ Roadmap Confirmed & Active` once the user confirms and saves the roadmap.
+23. **Introduced Penny the Mascot**: Extended the scrollytelling container in `src/app/page.js` (`MascotScrollytelling.js`) from `600vh` to `800vh`. Added a new narrative "Beat E" (72-85% scroll) to introduce "Penny", a feline financial astronaut and relatable proxy for confused new graduates. Beat E displays Penny's image and backstory on a glassmorphism card while holding the final background frame still. The final "Start Journey" CTA was shifted to Beat F (88-100%).
 
 ---
 
@@ -88,7 +89,7 @@ finance/
 
 - **Goal**: Maintain code alignment and support subsequent roadmap refinement requests.
 - **Why**: Deliver clear, transparent, and actionable personal finance tools.
-- **State**: The 4 summary cards show click-to-toggle inline explanations, the feasibility metric displays correct descriptive values, and custom deposits calculate progress proportionally. The Advisor Chat fills the vertical gap down to the input field correctly. The journey stages sidebar displays only the 3 active steps, and the proceed buttons are updated. The manual intake form includes Start Date and Work Location fields. The authentication forms support toggling password visibility. The `brain.md` file is actively synchronized. Max token requests are set to 1024.
+- **State**: The 4 summary cards show click-to-toggle inline explanations, the feasibility metric displays correct descriptive values, and custom deposits calculate progress proportionally. The Advisor Chat fills the vertical gap down to the input field correctly. The journey stages sidebar displays only the 3 active steps, and the proceed buttons are updated. The manual intake form includes Start Date and Work Location fields. The authentication forms support toggling password visibility. The `brain.md` file is actively synchronized. Max token requests are set to 1024. The landing page now features an elongated scroll to accommodate the new Beat E, which introduces Penny the mascot before the final CTA.
 
 ---
 
