@@ -200,3 +200,17 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { userId, db } = await getAuthContext();
+    await db.collection('goals').deleteOne({ userId });
+    return NextResponse.json({ success: true, message: 'Goal reset' });
+  } catch (error) {
+    console.error('Error in DELETE /api/goals:', error);
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

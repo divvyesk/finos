@@ -1843,6 +1843,842 @@
         "errors": [],
         "warnings": []
       }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-12T13:22:01.305Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": null,
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": null,
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Start date not detected. You can add it manually if needed for roadmap planning.",
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-12T13:23:57.947Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-12T14:29:52.938Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-12T15:05:04.818Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-12T16:23:39.138Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783572885371",
+      "timestamp": "2026-07-12T18:14:35.446Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": null,
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": null,
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Start date not detected. You can add it manually if needed for roadmap planning.",
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783572885371",
+      "timestamp": "2026-07-12T18:15:55.218Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783572885371",
+      "timestamp": "2026-07-13T05:20:14.859Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "CA",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": 0,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_rate": 0.5,
+          "match_limit": 0.06
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 15,
+        "probation_period_days": 0
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:42:11.928Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": null,
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": null,
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Start date not detected. You can add it manually if needed for roadmap planning.",
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:44:23.678Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": {
+          "amount": 10000,
+          "currency": "USD"
+        },
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": "2026-08-03",
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null,
+        "job_title": "Software Engineer I",
+        "department": "Product Engineering",
+        "manager": "Sarah Chen",
+        "work_location": "San Jose, California",
+        "base_salary": {
+          "amount": 115000,
+          "currency": "USD"
+        },
+        "relocation_assistance": {
+          "amount": 5000,
+          "currency": "USD"
+        },
+        "equity_compensation": {
+          "type": "RSU",
+          "number_of_shares": 400,
+          "vesting_schedule": "25% after 1 year, remaining 75% quarterly over 3 years"
+        },
+        "benefits": {
+          "medical_insurance": true,
+          "dental_insurance": true,
+          "vision_insurance": true,
+          "life_insurance": true,
+          "disability_insurance": true,
+          "retirement_plan": {
+            "type": "401(k)",
+            "match_rate": 0.5,
+            "match_limit": 0.06
+          }
+        },
+        "paid_time_off": {
+          "vacation_days": 15,
+          "company_holidays": 10,
+          "sick_days": 5
+        }
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:46:38.655Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": {
+          "amount": 10000,
+          "currency": "USD"
+        },
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": "2026-08-03",
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null,
+        "job_title": "Software Engineer I",
+        "department": "Product Engineering",
+        "manager": "Sarah Chen",
+        "work_location": "San Jose, California",
+        "base_salary": {
+          "amount": 115000,
+          "currency": "USD"
+        },
+        "relocation_assistance": {
+          "amount": 5000,
+          "currency": "USD"
+        },
+        "equity_compensation": {
+          "type": "RSU",
+          "number_of_shares": 400,
+          "vesting_schedule": "25% after 1 year, remaining 75% quarterly over 3 years"
+        },
+        "benefits": {
+          "medical_insurance": true,
+          "dental_insurance": true,
+          "vision_insurance": true,
+          "life_insurance": true,
+          "disability_insurance": true,
+          "retirement_plan": {
+            "type": "401(k)",
+            "match_rate": 0.5,
+            "match_limit": 0.06
+          }
+        },
+        "paid_time_off": {
+          "vacation_days": 15,
+          "company_holidays": 10,
+          "sick_days": 5
+        }
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:51:53.134Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": null,
+        "salary": null,
+        "signing_bonus": {
+          "amount": 10000,
+          "currency": "USD"
+        },
+        "relocation_bonus": null,
+        "rsu_count": null,
+        "vesting_period_years": null,
+        "stock_options": null,
+        "pay_frequency": null,
+        "start_date": "2026-08-03",
+        "location": null,
+        "employment_type": "full_time",
+        "retirement_401k": null,
+        "health_insurance": null,
+        "pto_days": null,
+        "probation_period_days": null,
+        "job_title": "Software Engineer I",
+        "department": "Product Engineering",
+        "manager": "Sarah Chen",
+        "work_location": "San Jose, California",
+        "base_salary": {
+          "amount": 115000,
+          "currency": "USD"
+        },
+        "relocation_assistance": {
+          "amount": 5000,
+          "currency": "USD"
+        },
+        "equity_compensation": {
+          "type": "RSU",
+          "quantity": 400,
+          "vesting_schedule": "25% after 1 year, remaining 75% quarterly over 3 years"
+        },
+        "benefits": {
+          "medical_insurance": true,
+          "dental_insurance": true,
+          "vision_insurance": true,
+          "life_insurance": true,
+          "disability_insurance": true,
+          "retirement_plan": {
+            "type": "401(k)",
+            "match_rate": 0.5,
+            "match_limit": 0.06
+          }
+        },
+        "paid_time_off": {
+          "vacation_days": 15,
+          "company_holidays": 10,
+          "sick_days": 5
+        }
+      },
+      "validation": {
+        "isValid": false,
+        "errors": [
+          "Could not detect base salary. Please enter it manually.",
+          "Employment state is missing. Required for US federal and state tax calculations.",
+          "Pay frequency (weekly, biweekly, monthly, etc.) could not be detected. Please specify it manually."
+        ],
+        "warnings": [
+          "Work location not detected. This may affect state tax jurisdiction calculations.",
+          "No health insurance benefits detected in the document. This is unusual for full-time employment."
+        ]
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:54:11.462Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T07:57:56.095Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T13:09:35.532Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T17:20:43.832Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T17:20:59.076Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T17:21:19.720Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.98,
+      "extractionMethod": "pdf-parse",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "userId": "1783652825767",
+      "timestamp": "2026-07-13T17:23:32.047Z",
+      "source": "File: sample_new_grad_offer_letter.pdf (application/pdf)",
+      "ocrConfidence": 0.97,
+      "extractionMethod": "pdf-parse (fallback)",
+      "data": {
+        "country": "US",
+        "currency": "USD",
+        "state": "California",
+        "salary": 115000,
+        "signing_bonus": 10000,
+        "relocation_bonus": 5000,
+        "rsu_count": 400,
+        "vesting_period_years": 4,
+        "stock_options": null,
+        "pay_frequency": "biweekly",
+        "start_date": "2026-08-03",
+        "location": "San Jose, California",
+        "employment_type": "full_time",
+        "retirement_401k": {
+          "match_limit": 6,
+          "match_rate": 0.5
+        },
+        "health_insurance": {
+          "medical": true,
+          "dental": true,
+          "vision": true
+        },
+        "pto_days": 30,
+        "probation_period_days": null
+      },
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
     }
   ]
 }

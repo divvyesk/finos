@@ -437,7 +437,7 @@ export default function MascotScrollytelling({ user }) {
           }}
         >
           <div style={{
-            maxWidth: '1200px',
+            maxWidth: '1000px',
             width: '100%',
             background: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(20px)',
@@ -478,7 +478,7 @@ export default function MascotScrollytelling({ user }) {
             </div>
 
             {/* Backstory */}
-            <div style={{ flex: '5' }}>
+            <div style={{ flex: '1' }}>
               <h3 style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, color: '#575c8d', marginBottom: '0.5rem' }}>
                 Before we start...
               </h3>
@@ -554,15 +554,9 @@ export default function MascotScrollytelling({ user }) {
               <span className="apple-gradient-text">STARTS HERE</span>
             </h2>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              {user ? (
-                <a href="/dashboard" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
-                  Go to Dashboard
-                </a>
-              ) : (
-                <a href="/signup" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
-                  Start My Financial Journey
-                </a>
-              )}
+              <a href="/signup" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
+                Start My Financial Journey
+              </a>
             </div>
           </div>
         </motion.div>

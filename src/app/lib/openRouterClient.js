@@ -3,24 +3,24 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 const FALLBACK_MODELS = [
-  'google/gemini-2.5-flash',
-  'meta-llama/llama-3.1-8b-instruct',
-  'google/gemini-2.5-pro',
-  'anthropic/claude-3-haiku'
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'llama-3.3-70b-versatile',
+  'llama-3.1-8b-instant'
 ];
 
 /**
- * Maps direct Gemini SDK model names to OpenRouter model slugs.
+ * Maps direct Gemini SDK model names to Groq model slugs.
  */
 function mapModel(modelName) {
   if (modelName === 'gemini-2.5-flash') {
-    return 'google/gemini-2.5-flash';
+    return 'openai/gpt-oss-120b';
   }
   if (modelName === 'gemini-1.5-flash') {
-    return 'google/gemini-1.5-flash';
+    return 'openai/gpt-oss-120b';
   }
   // Default fallback or pass-through
-  return modelName || 'google/gemini-2.5-flash';
+  return modelName || 'openai/gpt-oss-120b';
 }
 
 /**
@@ -56,16 +56,62 @@ async function executeRequestWithModel({ model, messages, maxTokens, config, api
     }
   }
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  // Ensure "json" is in the prompt/messages when response_format is json_object
+  if (requestBody.response_format && requestBody.response_format.type === 'json_object') {
+    const hasJsonWord = messages.some(msg => 
+      typeof msg.content === 'string' && msg.content.toLowerCase().includes('json')
+    );
+    if (!hasJsonWord) {
+      const lastUserMsg = [...messages].reverse().find(msg => msg.role === 'user');
+      if (lastUserMsg) {
+        lastUserMsg.content += "\n\nImportant: Your response must be in valid JSON format.";
+      } else {
+        messages.push({ role: 'system', content: 'Your response must be in valid JSON format.' });
+      }
+    }
+  }
+
+  let response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://github.com/divvyesk/finance',
-      'X-OpenRouter-Title': 'FinOS Personal Finance'
+      'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify(requestBody)
   });
+
+  // If json_schema is not supported, fall back to json_object
+  if (!response.ok && config.responseMimeType === 'application/json' && config.responseSchema) {
+    const errorText = await response.text();
+    if (errorText.includes('json_schema')) {
+      console.warn(`Model ${model} does not support json_schema response format. Falling back to json_object.`);
+      requestBody.response_format = {
+        type: 'json_object'
+      };
+      // Ensure "json" is in the prompt/messages when falling back to json_object
+      const hasJsonWord = messages.some(msg => 
+        typeof msg.content === 'string' && msg.content.toLowerCase().includes('json')
+      );
+      if (!hasJsonWord) {
+        const lastUserMsg = [...messages].reverse().find(msg => msg.role === 'user');
+        if (lastUserMsg) {
+          lastUserMsg.content += "\n\nImportant: Your response must be in valid JSON format.";
+        } else {
+          messages.push({ role: 'system', content: 'Your response must be in valid JSON format.' });
+        }
+      }
+      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+    } else {
+      throw new Error(`API error (${response.status}): ${errorText}`);
+    }
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -93,13 +139,13 @@ function cleanJSONText(text) {
 }
 
 /**
- * Centralized function to call the OpenRouter API with automatic fallbacks.
+ * Centralized function to call the Groq API with automatic fallbacks.
  * Mimics the output of direct Gemini SDK response format: { text: string }
  */
 export async function callOpenRouter({ model, contents, config = {} }) {
-  const apiKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY;
   if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY is not defined in the environment variables.');
+    throw new Error('GROQ_API_KEY is not defined in the environment variables.');
   }
 
   // Normalize contents/messages to standard OpenAI chat completions format
@@ -181,6 +227,7 @@ export async function callOpenRouter({ model, contents, config = {} }) {
 
     // If we reach here, all options failed
     const errorSummaries = errors.map((e, idx) => `[Attempt ${idx + 1}]: ${e.message}`).join('; ');
-    throw new Error(`All OpenRouter models failed to respond. Errors: ${errorSummaries}`);
+    throw new Error(`All Groq models failed to respond. Errors: ${errorSummaries}`);
   }
 }
+

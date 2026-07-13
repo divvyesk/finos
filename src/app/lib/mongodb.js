@@ -1,36 +1,29 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.local' });
-
-const uri = process.env.MONGODB_URI;
-
-if (!uri) {
-  throw new Error('Please define the MONGODB_URI environment variable in .env.local');
-}
 
 let client;
 let clientPromise;
 
-if (process.env.NODE_ENV === 'development') {
-  // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri);
-    global._mongoClientPromise = client.connect();
-  }
-  clientPromise = global._mongoClientPromise;
-} else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri);
-  clientPromise = client.connect();
-}
-
-// Export a module-scoped MongoClient promise. By doing this in a
-// separate module, the client can be shared across functions.
-export default clientPromise;
-
 export async function getDatabase() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error('Please define the MONGODB_URI environment variable in .env.local');
+  }
+
+  if (!clientPromise) {
+    if (process.env.NODE_ENV === 'development') {
+      if (!global._mongoClientPromise) {
+        client = new MongoClient(uri);
+        global._mongoClientPromise = client.connect();
+      }
+      clientPromise = global._mongoClientPromise;
+    } else {
+      client = new MongoClient(uri);
+      clientPromise = client.connect();
+    }
+  }
+
   const conn = await clientPromise;
   return conn.db();
 }
+
+export default clientPromise;

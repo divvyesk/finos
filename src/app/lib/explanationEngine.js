@@ -33,15 +33,16 @@ ${deductionLines}
 - State/Provincial Marginal Rate: ${taxBrackets.stateMarginalRate}%
 
 Task:
-1. Generate an array of 3-5 concise bullet points ("insights") describing the user's specific tax situation. Include:
-   - The overall percentage of income lost to taxes (e.g., "You lose X% of your income to taxes").
-   - Comparative context (e.g., whether this is typical for their state/province/country).
-   - What their largest single deduction is.
-   - An actionable tax optimization tip (e.g. contributing to pre-tax retirement accounts to reduce taxable income).
+1. Generate an array of 3-5 concise bullet points ("insights") describing the user's specific tax situation. 
+   - Keep each insight VERY short (1-2 sentences maximum), punchy, and easy to read.
+   - Include the overall percentage of income lost to taxes.
+   - Include comparative context (e.g., whether this is typical).
+   - Identify what their largest single deduction is.
+   - Provide an actionable tax optimization tip.
 2. Generate an array of Q&As ("faqs") for EACH AND EVERY deduction item listed in the Breakdown.
    - For every deduction key EXCEPT "Pre-tax Contribution", the question MUST match this exact format: "What is [Deduction Name] and why am I paying it?"
    - If "Pre-tax Contribution" is listed in the Breakdown, you MUST generate this exact question: "What is Pre-Tax Contribution and why is it helpful?"
-   - For the answer, explain exactly what the tax or contribution is, what public services it funds (or how it reduces tax liability), and how it impacts them.
+   - For the answer, keep it VERY short (2-3 sentences maximum). Explain exactly what the tax or contribution is, what it funds, and how it impacts them.
 
 Return a JSON object conforming exactly to this structure:
 {
