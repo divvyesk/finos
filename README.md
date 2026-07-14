@@ -3,6 +3,11 @@
 FinOS is an AI-powered personal finance simulator and roadmap planner. It takes the guesswork out of budgeting by parsing your actual paystub or offer letter, running localized tax simulations, and helping you build a clear, step-by-step savings and investment roadmap with the help of a friendly feline mascot, Penny.
 
 ---
+**Meet Penny and make your Financial Roadmap now.**
+[Live demo →](https://finos-penny.vercel.app)
+
+<img width="1263" height="703" alt="Screenshot 2026-07-14 at 8 20 12 AM" src="https://github.com/user-attachments/assets/58cf6aa4-b8cb-4658-8446-ea42489d9243" />
+
 
 ## What It Does
 
